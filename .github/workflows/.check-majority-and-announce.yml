@@ -57,10 +57,10 @@ jobs:
           GSF_ENV: ${{ inputs.environment }}
         run: |
           GSF_VERSION=$(curl -sSm5 "$GSF_INFO_URL/info" | jq -r .sv.version)
-          GSF_DOCS=$(echo "$GSF_INFO_URL" | sed 's/global\.canton\.network\.sync\.global$/sync.global/')
           echo "GSF_INFO_URL=$GSF_INFO_URL" >> $GITHUB_ENV
           echo "GSF_ENV=$GSF_ENV" >> $GITHUB_ENV
           echo "GSF_VERSION=$GSF_VERSION" >> $GITHUB_ENV
+          echo "GSF_VERSION_ANCHOR=${GSF_VERSION//./-}" >> $GITHUB_ENV
           echo "GSF_DOCS=$GSF_DOCS" >> $GITHUB_ENV
 
       - name: Run SVS majority check
@@ -133,8 +133,8 @@ jobs:
                   text: |
                     :tada: Splice release `${{ env.GSF_VERSION }}` is ready for deployment on ${{ env.GSF_ENV }}, and is available from the GSF
                     :ship: ⅔ of Super Validator nodes have upgraded to this release, including the GSF Super Validator node
-                    *SV node status here*: https://sync.global/sv-network
-                    *Release notes here*: ${{ env.GSF_DOCS }}/release_notes.html
+                    *<https://canton.foundation/sv-network-status-2/|SV node status>*
+                    *<https://docs.canton.network/global-synchronizer/release-notes/splice#${{ env.GSF_VERSION_ANCHOR }}|Release notes>*
 
       - name: Announce the release to validator-operators-onboarding
         if: steps.check-majority.outputs.svs_majority == 'true' && steps.check-announced.outputs.already_announced == 'false'
