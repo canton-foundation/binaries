@@ -12,9 +12,9 @@
     <span>⅔ of Super Validator</span> nodes have upgraded to this release, including the GSF Super Validator node
   </p>
   <p>
-    <strong>SV node status:</strong> <a href="https://sync.global/sv-network" target="_blank" rel="noopener noreferrer">https://sync.global/sv-network</a>
+    <strong>SV node status:</strong> <a href="https://canton.foundation/sv-network-status-2/" target="_blank" rel="noopener noreferrer">SV node status</a>
   </p>
   <p>
-    <strong>Release notes:</strong> <a href="$DOCS/release_notes.html" target="_blank" rel="noopener noreferrer">$DOCS/release_notes.html</a>
+    <strong>Release notes:</strong> <a href="https://docs.canton.network/global-synchronizer/release-notes/splice#$VERSION_ANCHOR" target="_blank" rel="noopener noreferrer">Release notes</a>
   </p>
 </div>
