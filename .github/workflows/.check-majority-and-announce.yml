@@ -188,7 +188,7 @@ jobs:
           )
           echo "Draft ID: $DRAFT_ID"
 
-          VERSION=$GSF_VERSION ENVIRONMENT=$GSF_ENV DOCS=$GSF_DOCS envsubst < ./main/ci/splice_release_message.html.template > message.html
+          VERSION=$GSF_VERSION VERSION_ANCHOR=$GSF_VERSION_ANCHOR ENVIRONMENT=$GSF_ENV DOCS=$GSF_DOCS envsubst < ./main/ci/splice_release_message.html.template > message.html
 
           echo "Updating draft with message content"
           curl "${curl_options[@]}" -X POST \
