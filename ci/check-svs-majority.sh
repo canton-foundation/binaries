@@ -36,15 +36,15 @@ gsf_version() {
 
 check_svs_majority() {
     log "INFO" "Fetching all SV versions from: ${GSF_DOCS}/versions"
-    ALL_VERSIONS=$(curl -sSm5 "${GSF_DOCS}/versions" | \
+    ALL_VERSIONS=$(curl -sSfm5 "${GSF_DOCS}/versions" | \
       awk -F',' 'NR > 1 { gsub(/^ +| +$/, "", $3); print $3 }'
       ) || fatal "Failed to fetch or parse SV version list"
-    SVS_WITH_GSF_VERSION=$(echo "$ALL_VERSIONS" | grep -cxF "$GSF_VERSION") || true
-    ALL_VERSIONS_COUNT=$(echo "$ALL_VERSIONS" | wc -l)
-
-    if [ "$ALL_VERSIONS_COUNT" -eq 0 ]; then
+    if [[ -z "$ALL_VERSIONS" ]]; then
         fatal "No SV versions found"
     fi
+
+    SVS_WITH_GSF_VERSION=$(echo "$ALL_VERSIONS" | grep -cxF "$GSF_VERSION") || true
+    ALL_VERSIONS_COUNT=$(echo "$ALL_VERSIONS" | wc -l)
 
     REQUIRED_MAJORITY=$(((ALL_VERSIONS_COUNT + 1) * 2 / 3))
 
