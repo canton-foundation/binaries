@@ -3,7 +3,7 @@
 set -euo pipefail
 
 # Variables
-TOOLS=(curl skopeo jq git helm make)
+TOOLS=(curl skopeo jq git make)
 SOURCE_ORG="digital-asset"
 SOURCE_GHCR="ghcr.io/${SOURCE_ORG}"
 SOURCE_REPO="decentralized-canton-sync"
@@ -85,28 +85,43 @@ get_helm_from_splice() {
   echo "Helm charts from splice: $HELM_CHARTS"
 }
 
+copy_artifact() {
+    local source=$1
+    local destination=$2
+    shift 2
+
+    if skopeo inspect --raw --creds "${GITHUB_USERNAME}:${DEST_TOKEN}" "docker://${destination}" &>/dev/null; then
+        echo "Already present, skipping: ${destination}"
+        return
+    fi
+
+    skopeo copy --all \
+        --retry-times 5 \
+        --dest-creds "${GITHUB_USERNAME}:${DEST_TOKEN}" \
+        "$@" \
+        "docker://${source}" \
+        "docker://${destination}"
+}
+
 copy_docker_images() {
     for image in $IMAGES; do
-        image_trimmed=$(sed 's/.*\///' <<< $image)
+        image_trimmed=$(sed 's/.*\///' <<< "$image")
         echo "Copying Docker image: $image:${GSF_DEVNET_VERSION}"
-        skopeo copy --all \
+        copy_artifact \
+            "${SOURCE_GHCR}/${image}:${GSF_DEVNET_VERSION}" \
+            "ghcr.io/${DEST_REPO}/docker/${image_trimmed}:${GSF_DEVNET_VERSION}" \
             --override-os linux \
-            --override-arch amd64 \
-            --dest-username $GITHUB_USERNAME \
-            --dest-password $DEST_TOKEN \
-            docker://${SOURCE_GHCR}/${image}:${GSF_DEVNET_VERSION} \
-            docker://ghcr.io/${DEST_REPO}/docker/${image_trimmed}:${GSF_DEVNET_VERSION}
+            --override-arch amd64
     done
 }
 
 copy_helm_charts() {
-    helm registry login -u $GITHUB_USERNAME -p $DEST_TOKEN ghcr.io
     for chart in $HELM_CHARTS; do
-        chart_trimmed=$(sed 's/.*\///' <<< $chart)
-        echo "Copying Helm chart: $chart"
-        helm pull oci://$SOURCE_GHCR/${chart}:${GSF_DEVNET_VERSION}
-        helm push ${chart_trimmed}-${GSF_DEVNET_VERSION}.tgz oci://ghcr.io/${DEST_REPO}/helm/
-        rm ${chart_trimmed}-${GSF_DEVNET_VERSION}.tgz
+        chart_trimmed=$(sed 's/.*\///' <<< "$chart")
+        echo "Copying Helm chart: $chart:${GSF_DEVNET_VERSION}"
+        copy_artifact \
+            "${SOURCE_GHCR}/${chart}:${GSF_DEVNET_VERSION}" \
+            "ghcr.io/${DEST_REPO}/helm/${chart_trimmed}:${GSF_DEVNET_VERSION}"
     done
 }
 

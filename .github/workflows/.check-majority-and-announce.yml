@@ -105,9 +105,6 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y jq skopeo make
-          curl -fsSL -o /tmp/get_helm.sh https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
-          chmod 700 /tmp/get_helm.sh
-          /tmp/get_helm.sh
 
       - name: Run copy-binaries Script
         if: ${{ inputs.environment == 'DevNet' && steps.check-majority.outputs.svs_majority == 'true' && steps.check-announced.outputs.already_announced == 'false' }}
