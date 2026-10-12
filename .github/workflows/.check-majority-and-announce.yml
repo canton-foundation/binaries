@@ -78,6 +78,8 @@ jobs:
 
       - name: Check if version already announced and not skipped
         id: check-announced
+        env:
+          SVS_MAJORITY: ${{ steps.check-majority.outputs.svs_majority }}
         run: |
           ENV_LOWER=$(echo "${GSF_ENV}" | tr '[:upper:]' '[:lower:]')
           ANNOUNCED_FILE="tracking/ci/announced-${ENV_LOWER}.txt"
@@ -95,8 +97,13 @@ jobs:
               tee -a "$GITHUB_STEP_SUMMARY"
           else
             echo "already_announced=false" >> $GITHUB_OUTPUT
-            echo "Version ${GSF_VERSION} has not been announced for ${GSF_ENV}." | \
-              tee -a "$GITHUB_STEP_SUMMARY"
+            if [ "${SVS_MAJORITY}" = "true" ]; then
+              echo "Version ${GSF_VERSION} has not been announced for ${GSF_ENV} yet; announcing it now." | \
+                tee -a "$GITHUB_STEP_SUMMARY"
+            else
+              echo "Version ${GSF_VERSION} has not been announced for ${GSF_ENV} yet; waiting for SV majority." | \
+                tee -a "$GITHUB_STEP_SUMMARY"
+            fi
           fi
 
       # Copying binaries for DevNet only
