@@ -3,7 +3,7 @@ name: Copy Binaries and Announce Release
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */6 * * *' # Every 6 hours, every day
+    - cron: '5 * * * *' # Every hour, every day
 
 permissions: {}
 
