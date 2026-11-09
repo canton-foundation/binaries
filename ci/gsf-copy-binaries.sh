@@ -50,7 +50,7 @@ get_images_from_splice() {
       tr ' ' '\n' | # Replace spaces with newlines
       sed '/^$/d' | # Remove empty lines
       sed "s%^%${SOURCE_REPO}/docker/%" | # Prefix with source repo path
-      egrep -v 'pulumi-kubernetes-operator|splice-test-runner-hook' # Filter out unwanted images
+      grep -Ev 'pulumi-kubernetes-operator|splice-test-runner-hook' # Filter out unwanted images
   )
 
   # Clean up the temporary file
